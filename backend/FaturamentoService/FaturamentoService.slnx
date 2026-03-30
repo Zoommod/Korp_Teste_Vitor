@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FaturamentoService.API/FaturamentoService.API.csproj" />
+  <Project Path="FaturamentoService.Application/FaturamentoService.Application.csproj" />
+  <Project Path="FaturamentoService.Domain/FaturamentoService.Domain.csproj" />
+  <Project Path="FaturamentoService.Infrastructure/FaturamentoService.Infrastructure.csproj" />
+</Solution>
