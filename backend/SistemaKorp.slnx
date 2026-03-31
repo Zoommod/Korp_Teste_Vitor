@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/EstoqueService/">
+    <Project Path="EstoqueService/EstoqueService.API/EstoqueService.API.csproj" />
+    <Project Path="EstoqueService/EstoqueService.Application/EstoqueService.Application.csproj" />
+    <Project Path="EstoqueService/EstoqueService.Domain/EstoqueService.Domain.csproj" />
+    <Project Path="EstoqueService/EstoqueService.Infrastructure/EstoqueService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/FaturamentoService/">
+    <Project Path="FaturamentoService/FaturamentoService.API/FaturamentoService.API.csproj" />
+    <Project Path="FaturamentoService/FaturamentoService.Application/FaturamentoService.Application.csproj" />
+    <Project Path="FaturamentoService/FaturamentoService.Domain/FaturamentoService.Domain.csproj" />
+    <Project Path="FaturamentoService/FaturamentoService.Infrastructure/FaturamentoService.Infrastructure.csproj" />
+  </Folder>
+</Solution>
