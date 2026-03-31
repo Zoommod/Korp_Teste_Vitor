@@ -4,6 +4,14 @@
     <ProjectReference Include="..\EstoqueService.Domain\EstoqueService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CasosDeUso/" />
+    <Folder Include="DTOs/" />
+    <Folder Include="Interfaces/" />
+    <Folder Include="Mapeamentos/" />
+    <Folder Include="Resultados/" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
