@@ -2,6 +2,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EstoqueService.Domain\EstoqueService.Domain.csproj" />
+    <ProjectReference Include="..\EstoqueService.Application\EstoqueService.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration/" />
+    <Folder Include="Data/" />
+    <Folder Include="Repositories/" />
   </ItemGroup>
 
   <PropertyGroup>
