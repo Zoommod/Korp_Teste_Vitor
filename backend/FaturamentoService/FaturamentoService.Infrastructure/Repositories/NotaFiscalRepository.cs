@@ -30,7 +30,6 @@ public sealed class NotaFiscalRepository : INotaFiscalRepository
 
     public async Task AtualizarAsync(NotaFiscal nota)
     {
-        _context.NotaFiscais.Update(nota);
         await _context.SaveChangesAsync();
     }
 }
