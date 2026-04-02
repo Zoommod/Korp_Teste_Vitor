@@ -6,6 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="9.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
   </ItemGroup>
@@ -13,6 +14,7 @@
   <ItemGroup>
     <Folder Include="Configuration/" />
     <Folder Include="Data/" />
+    <Folder Include="Mensageria/" />
     <Folder Include="Repositories/" />
   </ItemGroup>
 
