@@ -2,6 +2,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FaturamentoService.Domain\FaturamentoService.Domain.csproj" />
+    <ProjectReference Include="..\FaturamentoService.Application\FaturamentoService.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration/" />
+    <Folder Include="Data/" />
+    <Folder Include="Repositories/" />
   </ItemGroup>
 
   <PropertyGroup>
