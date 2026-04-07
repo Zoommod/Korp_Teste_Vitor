@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuaSenha@123
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  estoque-api:
+    build:
+      context: ./backend/EstoqueService
+    container_name: estoque_api
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__EstoqueSqlServer=Server=db,1433;Database=EstoqueDb;User Id=sa;Password=SuaSenha@123;TrustServerCertificate=True
+    ports:
+      - "5106:8080"
+    depends_on:
+      - db
+
+  faturamento-api:
+    build:
+      context: ./backend/FaturamentoService
+    container_name: faturamento_api
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=FaturamentoDb;User Id=sa;Password=SuaSenha@123;TrustServerCertificate=True
+      - EstoqueService__BaseUrl=http://estoque-api:8080/
+    ports:
+      - "5226:8080"
+    depends_on:
+      - db
+      - estoque-api
+
+  frontend-angular:
+    build:
+      context: ./frontend
+    container_name: angular_app
+    ports:
+      - "4200:80"
+    depends_on:
+      - faturamento-api
+
+volumes:
+  mssql_data:
