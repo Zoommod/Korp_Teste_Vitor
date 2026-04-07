@@ -5,7 +5,7 @@ namespace FaturamentoService.Application.Interfaces;
 
 public interface INotaFiscalRepository
 {
-    Task AdicionarAsync(NotaFiscal nota);
-    Task<NotaFiscal?> ObterPorIdAsync(Guid id);
-    Task AtualizarAsync(NotaFiscal nota);
+    Task AdicionarAsync(NotaFiscal nota, CancellationToken cancellationToken);
+    Task<NotaFiscal?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken);
+    Task AtualizarAsync(NotaFiscal nota, CancellationToken cancellationToken);
 }

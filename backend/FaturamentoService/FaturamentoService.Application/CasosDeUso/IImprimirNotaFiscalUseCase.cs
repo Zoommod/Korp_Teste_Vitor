@@ -6,5 +6,5 @@ namespace FaturamentoService.Application.CasosDeUso;
 
 public interface IImprimirNotaFiscalUseCase
 {
-    Task<Resultado<NotaFiscalSaidaDto>> ExecutarAsync(Guid id);
+    Task<Resultado<NotaFiscalSaidaDto>> ExecutarAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -35,9 +35,9 @@ namespace EstoqueService.API.Controllers
         {
             var resultado = await _criar.ExecutarAsync(entrada, cancellationToken);
 
-            if(resultado.Sucesso)
-                return CreatedAtAction(nameof(ObterPorId), new{id = resultado.Valor!.Id}, resultado.Valor);
-            
+            if (resultado.Sucesso)
+                return CreatedAtAction(nameof(ObterPorId), new { id = resultado.Valor!.Id }, resultado.Valor);
+
             return ConverterFalha(resultado);
         }
 
@@ -48,9 +48,9 @@ namespace EstoqueService.API.Controllers
 
             var resultado = await _atualizar.ExecutarAsync(entradaComId, cancellationToken);
 
-            if(resultado.Sucesso)
+            if (resultado.Sucesso)
                 return Ok(resultado.Valor);
-            
+
             return ConverterFalha(resultado);
         }
 
@@ -59,45 +59,50 @@ namespace EstoqueService.API.Controllers
         {
             var resultado = await _buscarPorId.ExecutarAsync(id, cancellationToken);
 
-            if(resultado.Sucesso)
+            if (resultado.Sucesso)
                 return Ok(resultado.Valor);
-            
+
             return ConverterFalha(resultado);
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> Listar(CancellationToken cancellationToken)
         {
             var resultado = await _listar.ExecutarAsync(cancellationToken);
 
-            if(resultado.Sucesso)
+            if (resultado.Sucesso)
                 return Ok(resultado.Valor);
-            
+
             return ConverterFalha(resultado);
         }
 
         [HttpPost("abater-estoque")]
-        public async Task<IActionResult> AbaterEstoque([FromBody] AbaterEstoqueEntradaDto entrada, CancellationToken cancellationToken)
+        public async Task<IActionResult> AbaterLote([FromBody] AbaterEstoqueEntradaDto entrada, CancellationToken cancellationToken)
         {
             var resultado = await _abater.ExecutarAsync(entrada, cancellationToken);
 
-            if(resultado.Sucesso)
+            if (resultado.Sucesso)
                 return Ok(resultado.Valor);
-            
-            return ConverterFalha(resultado);
-        }
 
+            var erro = resultado.Erros.FirstOrDefault();
+            if (erro is not null)
+                return BadRequest(new { mensagem = erro.Mensagem });
+
+            return BadRequest();
+        }
 
         private IActionResult ConverterFalha<T>(Resultado<T> resultado)
         {
             var erro = resultado.Erros.FirstOrDefault();
-            
-            if(erro is null)
+
+            if (erro is null)
                 return BadRequest();
-            
+
             return erro.Codigo switch
             {
-                CodigoErro.NaoEncontrado => NotFound(resultado.Erros), CodigoErro.Conflito => Conflict(resultado.Erros), _ => BadRequest(resultado.Erros)
+                CodigoErro.NaoEncontrado => NotFound(resultado.Erros),
+                CodigoErro.Conflito => Conflict(resultado.Erros),
+                _ => BadRequest(resultado.Erros)
             };
         }
 

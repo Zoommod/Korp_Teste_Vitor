@@ -46,4 +46,11 @@ public class ProdutoRepository : IProdutoRepository
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Produto>> ObterPorCodigosAsync(IReadOnlyCollection<string> codigos, CancellationToken cancellationToken)
+    {
+        return await _context.Produtos
+            .Where(p => codigos.Contains(p.Codigo))
+            .ToListAsync(cancellationToken);
+    }
 }

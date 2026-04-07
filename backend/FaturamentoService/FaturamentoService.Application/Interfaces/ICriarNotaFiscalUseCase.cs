@@ -6,5 +6,5 @@ namespace FaturamentoService.Application.Interfaces;
 
 public interface ICriarNotaFiscalUseCase
 {
-    Task<Resultado<Guid>> ExecutarAsync(CriarNotaFiscalEntradaDto entrada);
+    Task<Resultado<Guid>> ExecutarAsync(CriarNotaFiscalEntradaDto entrada,CancellationToken cancellationToken);
 }

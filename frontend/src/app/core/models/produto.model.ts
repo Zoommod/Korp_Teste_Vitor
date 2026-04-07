@@ -4,3 +4,15 @@ export interface Produto {
   descricao: string;
   saldo: number;
 }
+
+export interface CriarProdutoDto {
+  codigo: string;
+  descricao: string;
+  saldoInicial: number;
+}
+
+export interface AtualizarProdutoDto {
+  codigo: string;
+  descricao: string;
+  saldo: number;
+}

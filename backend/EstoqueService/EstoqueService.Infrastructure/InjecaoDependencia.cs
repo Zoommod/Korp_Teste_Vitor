@@ -19,7 +19,7 @@ public static class InjecaoDependencia
         var connectionString = configuration.GetConnectionString("EstoqueSqlServer");
 
         if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException("Connection string EstoqueSqlServer nao configurada.");
+            throw new InvalidOperationException("Connection string EstoqueSqlServer não configurada.");
 
         services.AddDbContext<EstoqueDbContext>(options =>
             options.UseSqlServer(connectionString));
@@ -31,6 +31,7 @@ public static class InjecaoDependencia
         services.AddScoped<IBuscarProdutoPorIdUseCase, BuscarProdutoPorIdUseCase>();
         services.AddScoped<IListarProdutosUseCase, ListarProdutosUseCase>();
         services.AddScoped<IAbaterEstoqueUseCase, AbaterEstoqueUseCase>();
+        services.AddScoped<ITransacaoEstoque, TransacaoEstoque>();
 
         return services;
     }

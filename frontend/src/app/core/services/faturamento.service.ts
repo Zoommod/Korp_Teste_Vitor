@@ -9,10 +9,10 @@ import { CriarNotaFiscalDto, NotaFiscal } from '../models/nota-fiscal.model';
 export class FaturamentoService {
   private readonly baseUrl = environment.faturamentoApi;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
-  criarNota(dto: CriarNotaFiscalDto): Observable<NotaFiscal> {
-    return this.http.post<NotaFiscal>(`${this.baseUrl}/notas-fiscais`, dto);
+  criarNota(dto: CriarNotaFiscalDto): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/notas-fiscais`, dto);
   }
 
   imprimirNota(id: string): Observable<NotaFiscal> {

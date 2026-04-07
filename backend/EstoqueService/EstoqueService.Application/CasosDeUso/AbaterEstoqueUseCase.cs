@@ -10,18 +10,24 @@ namespace EstoqueService.Application.CasosDeUso;
 public sealed class AbaterEstoqueUseCase : IAbaterEstoqueUseCase
 {
     private readonly IProdutoRepository _repositorio;
+    private readonly ITransacaoEstoque _transacao;
 
-    public AbaterEstoqueUseCase(IProdutoRepository repositorio)
+    public AbaterEstoqueUseCase(IProdutoRepository repositorio, ITransacaoEstoque transacao)
     {
         _repositorio = repositorio;
+        _transacao = transacao;
     }
 
-    public async Task<Resultado<AbaterEstoqueResultadoDto>> ExecutarAsync(AbaterEstoqueEntradaDto entrada, CancellationToken cancellationToken)
+    public async Task<Resultado<AbaterEstoqueResultadoDto>> ExecutarAsync(
+        AbaterEstoqueEntradaDto entrada,
+        CancellationToken cancellationToken)
     {
         if (entrada?.Itens is null || entrada.Itens.Count == 0)
-            return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.Validacao("Lista de itens obrigatória."));
+            return Resultado<AbaterEstoqueResultadoDto>.Falha(
+                ErroAplicacao.Validacao("Lista de itens obrigatória."));
 
-        var itensAgrupados = entrada.Itens.GroupBy(i => i.CodigoProduto.Trim(), StringComparer.OrdinalIgnoreCase)
+        var itensAgrupados = entrada.Itens
+            .GroupBy(i => i.CodigoProduto.Trim(), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(
                 g => g.Key,
                 g => g.Sum(i => i.Quantidade),
@@ -30,47 +36,58 @@ public sealed class AbaterEstoqueUseCase : IAbaterEstoqueUseCase
         foreach (var par in itensAgrupados)
         {
             if (string.IsNullOrWhiteSpace(par.Key))
-                return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.Validacao("Código do produto obrigatório."));
+                return Resultado<AbaterEstoqueResultadoDto>.Falha(
+                    ErroAplicacao.Validacao("Código do produto obrigatório."));
 
             if (par.Value <= 0)
-                return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.Validacao("Quantidade deve ser maior que zero."));
+                return Resultado<AbaterEstoqueResultadoDto>.Falha(
+                    ErroAplicacao.Validacao("Quantidade deve ser maior que zero."));
         }
 
-        var produtosPorCodigo = new Dictionary<string, Produto>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var par in itensAgrupados)
-        {
-            var produto = await _repositorio.ObterPorCodigoAsync(par.Key, cancellationToken);
-
-            if (produto is null)
-            {
-                return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.NaoEncontrado($"Produto não encontrado: {par.Key}."));
-            }
-
-            if (produto.Saldo - par.Value < 0)
-            {
-                return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.Validacao($"Saldo insuficiente para o produto: {par.Key}."));
-            }
-
-            produtosPorCodigo[par.Key] = produto;
-        }
+        var saldosAtualizados = new List<ItemSaldoDto>();
 
         try
         {
-            foreach (var par in itensAgrupados) produtosPorCodigo[par.Key].AbaterEstoque(par.Value);
+            await _transacao.ExecutarAsync(async ct =>
+            {
+                var codigos = itensAgrupados.Keys.ToList();
+                var produtos = await _repositorio.ObterPorCodigosAsync(codigos, ct);
 
-            await _repositorio.SalvarAlteracoesAsync(cancellationToken);
+                var produtosPorCodigo = produtos
+                    .ToDictionary(p => p.Codigo, StringComparer.OrdinalIgnoreCase);
 
-            var resultado = new AbaterEstoqueResultadoDto(itensAgrupados
-            .Select(par => new ItemSaldoDto(par.Key, produtosPorCodigo[par.Key].Saldo))
-            .ToList()
-            .AsReadOnly());
+                foreach (var par in itensAgrupados)
+                {
+                    if (!produtosPorCodigo.TryGetValue(par.Key, out var produto))
+                        throw new InvalidOperationException($"Produto não encontrado: {par.Key}.");
 
-            return Resultado<AbaterEstoqueResultadoDto>.Ok(resultado);
+                    if (produto.Saldo - par.Value < 0)
+                        throw new InvalidOperationException($"Saldo insuficiente para o produto {par.Key}.");
+                }
+
+                foreach (var par in itensAgrupados)
+                {
+                    var produto = produtosPorCodigo[par.Key];
+                    produto.AbaterEstoque(par.Value);
+                    saldosAtualizados.Add(new ItemSaldoDto(produto.Codigo, produto.Saldo));
+                }
+
+                await _repositorio.SalvarAlteracoesAsync(ct);
+            }, cancellationToken);
         }
-        catch (ExcecaoDeDominio ex)
+        catch (InvalidOperationException ex)
         {
-            return Resultado<AbaterEstoqueResultadoDto>.Falha(ErroAplicacao.Validacao(ex.Message));
+            return Resultado<AbaterEstoqueResultadoDto>.Falha(
+                ErroAplicacao.Validacao(ex.Message));
         }
+        catch (Exception ex) when (ex.GetType().Name == "DbUpdateConcurrencyException")
+        {
+            return Resultado<AbaterEstoqueResultadoDto>.Falha(
+                ErroAplicacao.Conflito("Concorrência detectada. Tente novamente."));
+        }
+
+        var resultado = new AbaterEstoqueResultadoDto(saldosAtualizados.AsReadOnly());
+
+        return Resultado<AbaterEstoqueResultadoDto>.Ok(resultado);
     }
 }

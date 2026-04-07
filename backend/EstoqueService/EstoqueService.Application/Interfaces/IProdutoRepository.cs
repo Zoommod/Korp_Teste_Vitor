@@ -11,4 +11,6 @@ public interface IProdutoRepository
     Task<Produto?> ObterPorCodigoAsync(string codigo, CancellationToken cancellationToken);
     Task<IReadOnlyList<Produto>> ListarAsync(CancellationToken cancellationToken);
     Task SalvarAlteracoesAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<Produto>> ObterPorCodigosAsync(IReadOnlyCollection<string> codigos, CancellationToken cancellationToken);
+
 }

@@ -7,7 +7,8 @@ public enum CodigoErro
 {
     Validacao,
     NaoEncontrado,
-    Conflito
+    Conflito,
+    ServicoIndisponivel
 }
 
 public sealed class ErroAplicacao
@@ -24,6 +25,7 @@ public sealed class ErroAplicacao
     public static ErroAplicacao Validacao(string mensagem) => new(CodigoErro.Validacao, mensagem);
     public static ErroAplicacao NaoEncontrado(string mensagem) => new(CodigoErro.NaoEncontrado, mensagem);
     public static ErroAplicacao Conflito(string mensagem) => new(CodigoErro.Conflito, mensagem);
+    public static ErroAplicacao ServicoIndisponivel(string mensagem) => new(CodigoErro.ServicoIndisponivel, mensagem);
 }
 
 public sealed class Resultado<T>

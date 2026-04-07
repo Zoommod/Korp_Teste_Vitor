@@ -16,24 +16,26 @@ public sealed class CriarNotaFiscalUseCase : ICriarNotaFiscalUseCase
         _repository = repository;
     }
 
-    public async Task<Resultado<Guid>> ExecutarAsync(CriarNotaFiscalEntradaDto entrada)
+    public async Task<Resultado<Guid>> ExecutarAsync(
+        CriarNotaFiscalEntradaDto entrada,
+        CancellationToken cancellationToken)
     {
-        if(entrada?.Itens is null || entrada.Itens.Count == 0)
+        if (entrada?.Itens is null || entrada.Itens.Count == 0)
             return Resultado<Guid>.Falha("Lista de itens obrigatória.");
-        
+
         var nota = new NotaFiscal();
 
         try
         {
-            foreach(var item in entrada.Itens)
+            foreach (var item in entrada.Itens)
                 nota.AdicionarItem(item.CodigoProduto, item.Quantidade);
         }
-        catch(ExcecaoDeDominio ex)
+        catch (ExcecaoDeDominio ex)
         {
             return Resultado<Guid>.Falha(ex.Message);
         }
 
-        await _repository.AdicionarAsync(nota);
+        await _repository.AdicionarAsync(nota, cancellationToken);
 
         return Resultado<Guid>.Ok(nota.Id);
     }

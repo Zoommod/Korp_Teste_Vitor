@@ -15,21 +15,21 @@ public sealed class NotaFiscalRepository : INotaFiscalRepository
         _context = context;
     }
 
-    public async Task AdicionarAsync(NotaFiscal nota)
+    public async Task AdicionarAsync(NotaFiscal nota, CancellationToken cancellationToken)
     {
-        await _context.NotaFiscais.AddAsync(nota);
-        await _context.SaveChangesAsync();
+        await _context.NotaFiscais.AddAsync(nota, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<NotaFiscal?> ObterPorIdAsync(Guid id)
+    public async Task<NotaFiscal?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.NotaFiscais
             .Include(n => n.Itens)
-            .FirstOrDefaultAsync(n => n.Id == id);
+            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
     }
 
-    public async Task AtualizarAsync(NotaFiscal nota)
+    public async Task AtualizarAsync(NotaFiscal nota, CancellationToken cancellationToken)
     {
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
