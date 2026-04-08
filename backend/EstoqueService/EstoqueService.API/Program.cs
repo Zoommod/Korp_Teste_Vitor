@@ -1,6 +1,8 @@
 using EstoqueService.Application.Consumidores;
 using EstoqueService.Infrastructure;
+using EstoqueService.Infrastructure.Data;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,15 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<EstoqueDbContext>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

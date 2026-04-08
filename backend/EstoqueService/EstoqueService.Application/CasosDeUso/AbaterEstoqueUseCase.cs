@@ -18,9 +18,7 @@ public sealed class AbaterEstoqueUseCase : IAbaterEstoqueUseCase
         _transacao = transacao;
     }
 
-    public async Task<Resultado<AbaterEstoqueResultadoDto>> ExecutarAsync(
-        AbaterEstoqueEntradaDto entrada,
-        CancellationToken cancellationToken)
+    public async Task<Resultado<AbaterEstoqueResultadoDto>> ExecutarAsync(AbaterEstoqueEntradaDto entrada, CancellationToken cancellationToken)
     {
         if (entrada?.Itens is null || entrada.Itens.Count == 0)
             return Resultado<AbaterEstoqueResultadoDto>.Falha(
